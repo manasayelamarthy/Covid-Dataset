@@ -5,6 +5,10 @@ import os
 import matplotlib.pyplot as plt
 import logging
 
+import torch
+from torch.utils.data import Dataset
+# from sklearn.preprocessing import OneHotEncoder
+
 #initialize logging
 log_dir = "logs"
 os.makedirs(log_dir, exist_ok = True)
@@ -28,7 +32,7 @@ logger.addHandler(file_logger)
 
 
 
-class covidDataset():
+class covidData_ingestion():
     def __init__(self, root_dir):
         self.path = root_dir
         self.imagePaths = {}
@@ -38,21 +42,24 @@ class covidDataset():
         """
         Load image paths from root dir having 3 different classes.
         """
-        try: 
-            num_classes = os.listdir(self.path)  
-            self.imagePaths = {classes : [] for classes in num_classes}
-            for classes in num_classes:  
-                class_dir = self.path + classes
-                
-                if os.path.isdir(class_dir):
-    
-                    for image_file in os.listdir(class_dir): 
-                        image_path = class_dir +  '/' + image_file 
-                        self.imagePaths[classes].append(image_path)
-            logger.debug("loaded imagePaths with 3 classes")
-            return self.imagePaths
-        except Exception as e:
-            logger.error('unable to load imagePaths %s', e)
+         
+        num_classes = sorted(os.listdir(self.path))  
+        class_to_index = {label: idx for idx, label in enumerate(num_classes)}  
+        
+        for label in num_classes:  
+            class_dir = os.path.join(self.path, label)
+            
+            if os.path.isdir(class_dir):
+                for image_file in os.listdir(class_dir): 
+                    image_path = os.path.join(class_dir, image_file)
+                    # One-hot encoded label
+                    one_hot_label = [0] * len(num_classes)
+                    one_hot_label[class_to_index[label]] = 1
+                    
+                    self.imagePaths[image_path] = one_hot_label  
+
+        return self.imagePaths
+        
 
 
     def plot_images(self):
@@ -61,9 +68,13 @@ class covidDataset():
             """
             image_paths = self.load_paths()
 
-            covidImage  = cv2.imread(image_paths["Covid"][0], cv2.IMREAD_GRAYSCALE)
-            NormalImage = cv2.imread(image_paths["Normal"][0], cv2.IMREAD_GRAYSCALE)
-            viralPImage = cv2.imread(image_paths["Viral Pneumonia"][0], cv2.IMREAD_GRAYSCALE)
+            covid_imagepath = [ path for path in image_paths if image_paths[path] == 'Covid'][0]
+            normal_imagepath = [ path for path in image_paths if image_paths[path] == 'Normal'][0]
+            viralp_imagepath = [ path for path in image_paths if image_paths[path] == 'Viral Pneumonia'][0]
+
+            covidImage  = cv2.imread(covid_imagepath, cv2.IMREAD_GRAYSCALE)
+            NormalImage = cv2.imread(normal_imagepath, cv2.IMREAD_GRAYSCALE)
+            viralPImage = cv2.imread(viralp_imagepath, cv2.IMREAD_GRAYSCALE)
 
             _,axes =  plt.subplots(1, 3, figsize = (10, 5) )
             axes[0].imshow(covidImage, cmap = 'gray')
@@ -81,50 +92,50 @@ class covidDataset():
             plt.show()
 
 
-    def load_data(self):
+    def preprocess(self, images: np.array, labels: list[str], image_size = (224,224)):
         """
-        Load images from the dataset 
+        Apply Preprocessing to the given batch in the dataset 
         """
         try :
-
-            image_paths = self.load_paths()
-            images = []
-            labels = []
-            for i in image_paths:
-                for image_path in image_paths[i]:
-                    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-                    image = cv2.resize(image, (224, 224))
-                    image = image/255.0
-                    images.append(image)
-                    labels.append(i)
-
-            images = np.array(images)
-            labels = np.array(labels)
+            images = cv2.resize(images, image_size)
+            images = images/255.0
 
             logger.debug('loaded images and lables list')
             return images, labels
         except Exception as e:
             logger.error('unable to get images,labels lists  %s', e)
 
-    def labels_numeric(self):
-        """
-        Convert labels to numeric
-        """
-        try :
-            labels = self.load_data()[1]
-            labels_numeric = pd.get_dummies(labels)
-            labels_numeric = labels_numeric.values.argmax(1)
-            logger.debug('converted labels to numeric values using one hot encoding')
-            return labels_numeric
-            
-        except Exception as e:
-            logger.error('error in converting into labels to numerical values %s', e)
+    
+
+class CovidDataset(Dataset):
+    def __init__(self, datapath :str, image_size):
+        self.data_ingester = covidData_ingestion(root_dir = datapath)
+        self.image_paths = self.data_ingester.load_paths()
+        self.image_size = image_size
+        self.label_maps = {
+            'Covid' : 0,
+            'Normal': 1,
+            'Viral Pneumonia' : 2 
+        }
+
+
+    def __len__(self):
+        return len(self.image_paths)
+    
+    def __getitem__(self, idx):
+        image_path = list(self.image_paths.keys())[idx]
+        label = list(self.image_paths.values())[idx]
+        
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+       
+        image, label = self.data_ingester.preprocess(image, label, self.image_size)
+        
+        return torch.tensor(image).to(torch.float32), torch.tensor(label).to(torch.float32)
 
 
 
 if __name__ =="__main__":
     datapath = "data/Covid19-dataset/train/"
-    dataset = covidDataset(root_dir = datapath)
-    dataset.labels_numeric()
-
-    
+    dataset = CovidDataset(datapath, image_size = (224,224))
+    images,labels = dataset.__getitem__(idx = 200)
+    print(images.shape, labels.shape)   
