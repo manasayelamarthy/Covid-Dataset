@@ -1,0 +1,20 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+from torchvision import models
+
+
+class ResnetClassifier(nn.Module):
+    def __init__(self, num_classes):
+        super(ResnetClassifier, self).__init__()
+
+        # Resnet backbone
+        self.resnet = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+
+        # Fully connected layer
+        features = self.resnet.fc.in_features
+        self.resnet.fc = nn.Linear(features, num_classes)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.resnet(x)

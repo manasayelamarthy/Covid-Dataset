@@ -7,7 +7,6 @@ import logging
 
 import torch
 from torch.utils.data import Dataset
-# from sklearn.preprocessing import OneHotEncoder
 
 #initialize logging
 log_dir = "logs"
@@ -45,20 +44,24 @@ class covidData_ingestion():
          
         num_classes = sorted(os.listdir(self.path))  
         class_to_index = {label: idx for idx, label in enumerate(num_classes)}  
+        try :
+            for label in num_classes:  
+                class_dir = os.path.join(self.path, label)
+                
+                if os.path.isdir(class_dir):
+                    for image_file in os.listdir(class_dir): 
+                        image_path = os.path.join(class_dir, image_file)
+                        # One-hot encoded label
+                        one_hot_label = [0] * len(num_classes)
+                        one_hot_label[class_to_index[label]] = 1
+                        
+                        self.imagePaths[image_path] = one_hot_label  
+                        
+            logger.debug("loaded imagePaths with 3 classes")
+            return self.imagePaths
+        except Exception as e:
+            logger.error('unable to load imagePaths %s',e)
         
-        for label in num_classes:  
-            class_dir = os.path.join(self.path, label)
-            
-            if os.path.isdir(class_dir):
-                for image_file in os.listdir(class_dir): 
-                    image_path = os.path.join(class_dir, image_file)
-                    # One-hot encoded label
-                    one_hot_label = [0] * len(num_classes)
-                    one_hot_label[class_to_index[label]] = 1
-                    
-                    self.imagePaths[image_path] = one_hot_label  
-
-        return self.imagePaths
         
 
 
@@ -100,10 +103,10 @@ class covidData_ingestion():
             images = cv2.resize(images, image_size)
             images = images/255.0
 
-            logger.debug('loaded images and lables list')
+            logger.debug('preprocessed images')
             return images, labels
         except Exception as e:
-            logger.error('unable to get images,labels lists  %s', e)
+            logger.error('preprocessing failed %s', e)
 
     
 
