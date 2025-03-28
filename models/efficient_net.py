@@ -16,3 +16,6 @@ class efficientnetClassifier(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.efficientnet(x)
+    
+if __name__ == "__main__":
+    model = efficientnetClassifier(num_classes = 3)

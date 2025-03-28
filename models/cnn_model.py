@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class CNNModel(nn.Module):
-    def __init__(self, num_classes=3):
+    def __init__(self, num_classes):
         super(CNNModel, self).__init__()
         
         # Convolutional layers
@@ -37,6 +37,7 @@ class CNNModel(nn.Module):
         
         return F.softmax(x, dim=1)
 
-# Initialize model
-model = CNNModel(num_classes=3)
-print(model)
+
+if __name__ == "__main__":
+    model = CNNModel(num_classes=3)
+

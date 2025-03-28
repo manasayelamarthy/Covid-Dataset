@@ -138,7 +138,4 @@ class CovidDataset(Dataset):
 
 
 if __name__ =="__main__":
-    datapath = "data/Covid19-dataset/train/"
-    dataset = CovidDataset(datapath, image_size = (224,224))
-    images,labels = dataset.__getitem__(idx = 200)
-    print(images.shape, labels.shape)   
+    pass
