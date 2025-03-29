@@ -77,7 +77,7 @@ for epoch in num_epochs:
 
     val_logs = validate(model, val_dataloader, criterion)
 
-    train_logger.add_logs(epoch, train_logs, val_logs)
+    train_logger.add_logs(epoch + 1, train_logs, val_logs)
 
     if val_logs['accuracy'] > best_accuracy:
         filename = config.checkpoint_dir + f'{config.model}.pth'

@@ -16,8 +16,8 @@ class trainLogging:
 def add_logs(self, epoch, train_logs, val_logs):
     epoch_row = {'epochs': epoch}
 
-    epoch_row.update({f'train_{metric}':value for metric,value in train_logs.items()})
-    epoch_row.update({f'val_{metric}':value for metric,value in val_logs.item()})
+    epoch_row.update({f'train_{key}':value for key,value in train_logs.items()})
+    epoch_row.update({f'val_{key}':value for key,value in val_logs.items()})
 
     self.logs = pd.concat([self.logs + pd.DataFrame(epoch_row)])
 
