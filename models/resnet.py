@@ -3,6 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from torchvision import models
+from torch.optim import Adam
+
+from .config import train_Config
 
 
 class ResnetClassifier(nn.Module):
@@ -19,6 +22,14 @@ class ResnetClassifier(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.resnet(x)
     
+class resnetModel:
+    def __init__(self, config = train_Config()):
+        self.model = ResnetClassifier(  num_classes = config.num_classes)
+        self.loss  = config.loss
+        self.optimizer = Adam(self.model.parameters(), lr = config.learning_rate)
+
+        return self.model, self.loss, self.optimizer
+
 
 if __name__ == "__main__":
     model = ResnetClassifier(num_classes = 3)

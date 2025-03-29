@@ -1,9 +1,9 @@
-from .cnn_model import CNNModel
-from .efficient_net import efficientnetClassifier
-from .resnet import ResnetClassifier
+from .cnn_model import CNNModel, cnnModel
+from .efficient_net import efficientnetClassifier,efficientModel
+from .resnet import ResnetClassifier,resnetModel
 
-all_model = {
-    'cnn_model' : CNNModel,
-    'efficient_net' : efficientnetClassifier,
-    'resnet': ResnetClassifier
+all_models = {
+    'cnn_model' : cnnModel,
+    'efficient_net' :  efficientModel,
+    'resnet':  resnetModel
 }

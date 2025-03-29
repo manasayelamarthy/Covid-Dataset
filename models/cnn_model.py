@@ -2,6 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torch.optim import Adam
+
+from .config import train_Config
+
 class CNNModel(nn.Module):
     def __init__(self, num_classes):
         super(CNNModel, self).__init__()
@@ -36,6 +40,15 @@ class CNNModel(nn.Module):
         x = self.fc3(x)
         
         return F.softmax(x, dim=1)
+
+class cnnModel:
+    def __init__(self, config = train_Config()):
+        self.model = CNNModel(  num_classes = config.num_classes)
+        self.loss  = config.loss
+        self.optimizer = Adam(self.model.parameters(), lr = config.learning_rate)
+
+        return self.model, self.loss, self.optimizer
+    
 
 
 if __name__ == "__main__":
