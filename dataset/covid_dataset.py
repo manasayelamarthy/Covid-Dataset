@@ -55,7 +55,9 @@ class covidData_ingestion():
                         one_hot_label = [0] * len(num_classes)
                         one_hot_label[class_to_index[label]] = 1
                         
-                        self.imagePaths[image_path] = one_hot_label  
+                        self.imagePaths[image_path] = one_hot_label
+                
+        
                         
             logger.debug("loaded imagePaths with 3 classes")
             return self.imagePaths
@@ -111,7 +113,7 @@ class covidData_ingestion():
     
 
 class CovidDataset(Dataset):
-    def __init__(self, datapath :str, image_size):
+    def __init__(self, datapath :str, image_size, **args):
         self.data_ingester = covidData_ingestion(root_dir = datapath)
         self.image_paths = self.data_ingester.load_paths()
         self.image_size = image_size
