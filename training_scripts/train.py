@@ -4,6 +4,10 @@ import argparse
 from tqdm import tqdm
 import time
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from dataset import get_dataloaders
 from config import train_Config
 from models import all_models
@@ -38,11 +42,16 @@ def arg_parse():
 args = arg_parse().__dict__
 config = train_Config(**args)
 
+print(config.model)
 train_dataloder, val_dataloader = get_dataloaders(config)
-model, _, optimizer = all_models[config.model](config)
+
+trainer = all_models[config.model](config)
+
+model = trainer.model.to(device)
+optimizer = trainer.optimizer
 
 criterion = nn.CrossEntropyLoss()
-num_epochs = args['epochs']
+num_epochs = config.epochs
 
 train_logs = {
     'loss' : 0,
@@ -52,7 +61,7 @@ best_accuracy = 0
 metrics = list(metric for metric in all_metrics)
 train_logger = trainLogging(metrics, config )
 
-for epoch in num_epochs:
+for epoch in range(num_epochs):
     start_time = time.time()
     model.train()
 
@@ -64,7 +73,7 @@ for epoch in num_epochs:
 
         optimizer.zero_grad()
         outputs = model(inputs)
-        loss = criterion(outputs, labels)
+        loss = criterion(outputs, labels.argmax(dim=1).float())
 
         loss.backward()
         optimizer.step()
@@ -73,7 +82,7 @@ for epoch in num_epochs:
 
         preds = torch.softmax(outputs, dim = 1)
         for metric in all_metrics:
-            train_logs['metric'] += metric(preds, labels)
+            train_logs[metric] += all_metrics[metric](preds, labels.argmax(dim=1).float())
 
     val_logs = validate(model, val_dataloader, criterion)
 

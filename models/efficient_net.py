@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torchvision import models
 from torch.optim import Adam
 
-from .config import train_Config
+from config import train_Config
 
 
 class efficientnetClassifier(nn.Module):
@@ -26,8 +26,6 @@ class efficientModel:
         self.model = efficientnetClassifier(  num_classes = config.num_classes)
         self.loss  = config.loss
         self.optimizer = Adam(self.model.parameters(), lr = config.learning_rate)
-
-        return self.model, self.loss, self.optimizer
     
 if __name__ == "__main__":
     model = efficientnetClassifier(num_classes = 3)

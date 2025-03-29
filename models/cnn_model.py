@@ -4,14 +4,14 @@ import torch.nn.functional as F
 
 from torch.optim import Adam
 
-from .config import train_Config
+from config import train_Config
 
 class CNNModel(nn.Module):
     def __init__(self, num_classes):
         super(CNNModel, self).__init__()
         
         # Convolutional layers
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
         self.conv3 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1)
         
@@ -46,8 +46,6 @@ class cnnModel:
         self.model = CNNModel(  num_classes = config.num_classes)
         self.loss  = config.loss
         self.optimizer = Adam(self.model.parameters(), lr = config.learning_rate)
-
-        return self.model, self.loss, self.optimizer
     
 
 

@@ -1,8 +1,8 @@
-from .config import train_config
+from config import train_Config
 import pandas as pd
 
 class trainLogging:
-    def __init__(self, metrics:list[str], config = train_config()):
+    def __init__(self, metrics:list[str], config = train_Config()):
         self.config = config
         columns = ['epoch', 'train_loss', 'val_loss']
 

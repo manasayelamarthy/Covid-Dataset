@@ -15,18 +15,13 @@ os.makedirs(log_dir, exist_ok = True)
 logger = logging.getLogger("data Ingestion")
 logger.setLevel(logging.DEBUG)
 
-console_logger = logging.StreamHandler()
-console_logger.setLevel(logging.DEBUG)
-
 file_path = os.path.join(log_dir, 'data Ingestion.log')
 file_logger = logging.FileHandler(file_path)
 file_logger.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s -%(message)s')
-console_logger.setFormatter(formatter)
 file_logger.setFormatter(formatter)
 
-logger.addHandler(console_logger)
 logger.addHandler(file_logger)
 
 
@@ -113,8 +108,8 @@ class covidData_ingestion():
     
 
 class CovidDataset(Dataset):
-    def __init__(self, datapath :str, image_size, **args):
-        self.data_ingester = covidData_ingestion(root_dir = datapath)
+    def __init__(self, data_dir :str, image_size, **args):
+        self.data_ingester = covidData_ingestion(root_dir = data_dir)
         self.image_paths = self.data_ingester.load_paths()
         self.image_size = image_size
         self.label_maps = {
@@ -135,7 +130,8 @@ class CovidDataset(Dataset):
        
         image, label = self.data_ingester.preprocess(image, label, self.image_size)
         
-        return torch.tensor(image).to(torch.float32), torch.tensor(label).to(torch.float32)
+        return (torch.tensor(image).to(torch.float32).unsqueeze(0),
+                torch.tensor(label).to(torch.float32).unsqueeze(0))
 
 
 

@@ -5,7 +5,7 @@ class train_Config():
         self.version:int = None 
         self.mode:str = ''
 
-        self.datapath:str = ''
+        self.data_dir:str = ''
         self.image_size: tuple[int,int] = ()
         self.batch_size: int = None
 
@@ -19,14 +19,14 @@ class train_Config():
         self.checkpoint_dir:str = ''
         self.log_dir:str = ''
 
-        self.set_args(**args)
         self.set_default()
+        self.set_args(**args)
 
     def set_default(self):
         self.version:int = 1
         self.mode:str = 'train'
 
-        self.datapath:str = ''
+        self.data_dir:str = ''
         self.image_size: tuple[int,int] = (224,224)
         self.batch_size: int = 32
 
@@ -36,7 +36,7 @@ class train_Config():
         self.metrics = 'all_metrics'
         self.learning_rate: float = 0.001
         self.loss = 'cross_entropy'
-        self.epochs:int = 16
+        self.epochs:int = 10
         self.checkpoint_dir:str = 'checkpoint/'
         self.log_dir:str = ' logs/'
 
@@ -44,7 +44,7 @@ class train_Config():
 
     def set_args(self, **args):
         for key, value in args.items():
-            if hasattr(self, key):
+            if hasattr(self, key) & (value is not None):
                 setattr(self, key, value)
 
     def save_config(self, filename):
