@@ -30,7 +30,7 @@ class train_Config():
         self.image_size: tuple[int,int] = (224,224)
         self.batch_size: int = 32
 
-        self.model = 'resnet'
+        self.model = 'cnn_model'
         self.num_classes:int =3
         self.optimizer = 'adam'
         self.metrics = 'all_metrics'
