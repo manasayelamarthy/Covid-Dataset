@@ -7,7 +7,7 @@ from config import train_Config
 
 class Tester:
     def __init__(self, model:str, checkpoint_path:str, device):
-        self.model = all_models[model](train_Config()).to(device)
+        self.model = all_models[model](train_Config()).model.to(device)
 
         self.model = load_checkpoint(self.model, checkpoint_path)
         self.device = device
@@ -20,19 +20,25 @@ class Tester:
 
     def predict(self, images: list[np.ndarray]):
         images = self.preprocess(images).to(self.device)
-        outputs = self.model(images)
-        preds = outputs.softmax(dim = 1).argmax(dim = 1).tolist()
+        with torch.no_grad():
+            outputs = self.model(images)
+            probs = outputs.softmax(dim = 1)
         
+            preds = probs.argmax(dim = 1).tolist()
 
-        preds = [self.label_maps[idx] for idx in preds]
+        confidences = []
+        for i, sample in enumerate(probs):
+            confidences.append(round(sample[preds[i]].item()*100, 2))
 
-        return preds
+        labels = [self.label_maps[idx] for idx in preds]
 
-    def preprocess(images: np.ndarray, image_size = (224,224)):
+        return labels, confidences
+
+    def preprocess(self, images: np.ndarray, image_size = (224,224)):
         """
         Apply Preprocessing to the given batch in the dataset 
         """
-        images = cv2.resize(images, image_size)
-        images = images/255.0
+        images = [cv2.resize(img, image_size) for img in images]
+        images = np.array(images)/255.0
 
-        return (torch.tensor(images).to(torch.float32).unsqueeze(0))
+        return (torch.tensor(images).to(torch.float32).unsqueeze(1))

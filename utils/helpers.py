@@ -7,6 +7,6 @@ def save_checkpoint(model:nn.Module, filename:str):
 
 def load_checkpoint(model:nn.Module, checkpoint_path:str):
     check_file = torch.load(checkpoint_path)
-    checkpoint = model.load_state_dict(check_file)
+    model.load_state_dict(check_file)
 
-    return checkpoint
+    return model
