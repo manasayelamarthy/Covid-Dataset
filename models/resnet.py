@@ -11,6 +11,7 @@ from config import train_Config
 class ResnetClassifier(nn.Module):
     def __init__(self, num_classes):
         super(ResnetClassifier, self).__init__()
+        self.input_layer = nn.Conv2d(in_channels = 1, out_channels = 3, kernel_size = 1)
 
         # Resnet backbone
         self.resnet = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
@@ -20,11 +21,12 @@ class ResnetClassifier(nn.Module):
         self.resnet.fc = nn.Linear(features, num_classes)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.input_layer(x)
         return self.resnet(x)
     
 class resnetModel:
     def __init__(self, config = train_Config()):
-        self.model = ResnetClassifier(  num_classes = config.num_classes)
+        self.model = ResnetClassifier(num_classes = config.num_classes)
         self.loss  = config.loss
         self.optimizer = Adam(self.model.parameters(), lr = config.learning_rate)
 

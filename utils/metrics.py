@@ -5,7 +5,6 @@ class Accuracy:
         pass
 
     def __call__(self, preds, targets):
-        preds = preds.argmax(dim=1)  
         return accuracy_score(targets, preds)
 
 class Precision:
@@ -13,13 +12,11 @@ class Precision:
         self.average = average
 
     def __call__(self, preds, targets):
-        preds = preds.argmax(dim=1)
-        return precision_score(targets, preds, average=self.average)
+        return precision_score(targets, preds, average=self.average, zero_division=1)
 
 class Recall:
     def __init__(self, average="macro"):
         self.average = average
 
     def __call__(self, preds, targets):
-        preds = preds.argmax(dim=1)
-        return recall_score(targets, preds, average=self.average)
+        return recall_score(targets, preds, average=self.average, zero_division=1)

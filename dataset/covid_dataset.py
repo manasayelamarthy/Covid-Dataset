@@ -46,11 +46,8 @@ class covidData_ingestion():
                 if os.path.isdir(class_dir):
                     for image_file in os.listdir(class_dir): 
                         image_path = os.path.join(class_dir, image_file)
-                        # One-hot encoded label
-                        one_hot_label = [0] * len(num_classes)
-                        one_hot_label[class_to_index[label]] = 1
                         
-                        self.imagePaths[image_path] = one_hot_label
+                        self.imagePaths[image_path] = class_to_index[label]
                 
         
                         
@@ -131,7 +128,7 @@ class CovidDataset(Dataset):
         image, label = self.data_ingester.preprocess(image, label, self.image_size)
         
         return (torch.tensor(image).to(torch.float32).unsqueeze(0),
-                torch.tensor(label).to(torch.float32).unsqueeze(0))
+                torch.tensor(label).to(torch.float32))
 
 
 

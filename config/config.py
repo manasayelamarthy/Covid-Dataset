@@ -1,4 +1,5 @@
 import json
+import os
 
 class train_Config():
     def __init__(self, **args):
@@ -22,6 +23,13 @@ class train_Config():
         self.set_default()
         self.set_args(**args)
 
+        if not os.path.exists(self.checkpoint_dir):
+            os.makedirs(self.checkpoint_dir)
+
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+        
+
     def set_default(self):
         self.version:int = 1
         self.mode:str = 'train'
@@ -30,7 +38,7 @@ class train_Config():
         self.image_size: tuple[int,int] = (224,224)
         self.batch_size: int = 32
 
-        self.model = 'cnn_model'
+        self.model = 'resnet'
         self.num_classes:int =3
         self.optimizer = 'adam'
         self.metrics = 'all_metrics'
@@ -40,6 +48,7 @@ class train_Config():
         self.checkpoint_dir:str = 'checkpoint/'
         self.log_dir:str = ' logs/'
 
+        
 
 
     def set_args(self, **args):
