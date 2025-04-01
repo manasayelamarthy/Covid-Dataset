@@ -89,7 +89,7 @@ class covidData_ingestion():
             plt.show()
 
 
-    def preprocess(self, images: np.array, labels: list[str], image_size = (224,224)):
+    def preprocess(self, images: np.ndarray, labels: list[str], image_size = (224,224)):
         """
         Apply Preprocessing to the given batch in the dataset 
         """
