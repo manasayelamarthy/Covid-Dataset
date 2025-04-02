@@ -25,9 +25,9 @@ This project utilizes three different deep learning models:
 - **ResNet** (98% accuracy)
 - **EfficientNet**
 - **Custom CNN model**
-```
+
 The training scripts are designed to be scalable, with automatic configuration and log saving.
-```
+
 ## Deployment Details
 The project is deployed using:
 - **Backend:** FastAPI, Docker, and Google Cloud Run
@@ -38,8 +38,8 @@ To train and run the model on your local machine:
 
 1. Clone the repository:
    ```sh
-   git clone YOUR_REPO_URL
-   cd covid-classification
+   git clone https://github.com/manasayelamarthy/Covid-Disease-Classification
+   cd Covid-Disease-Classification
    ```
 2. Create a virtual environment and install dependencies:
    ```sh
