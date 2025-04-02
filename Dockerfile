@@ -14,8 +14,8 @@ COPY . /app
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the application port
-EXPOSE 8000
+# Expose the correct port for Cloud Run
+EXPOSE 8080
 
-# Run FastAPI with Uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run FastAPI with Uvicorn on port 8080
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
