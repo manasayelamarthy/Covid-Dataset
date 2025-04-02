@@ -6,7 +6,7 @@ This project is a deep learning-based image classification model designed to det
 ## Deployed Application
 The frontend is built using Vercel v0 AI and deployed at:
 
-- [**Live Demo**]([YOUR_VERCEL_DEPLOYMENT_URL](https://v0-react-js-image-predictor.vercel.app/))
+- [**Live Demo**](https://v0-react-js-image-predictor.vercel.app/)
 
 ### Screenshot of the Webpage
 ![Webpage Screenshot](v0-react-js-image-predictor.vercel.app_.png)
